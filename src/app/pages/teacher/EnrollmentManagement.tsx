@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { Search, Check, X, Ban, UserX } from "lucide-react";
+import { Search, Check, X, Ban, UserX, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 type EnrollmentStatus = "pending" | "approved" | "rejected" | "blocked";
@@ -23,6 +23,7 @@ interface Enrollment {
   classroom: string;
   requestDate: string;
   status: EnrollmentStatus;
+  error?: string; // For inline error messages
 }
 
 export function TeacherEnrollmentManagement() {
@@ -74,9 +75,26 @@ export function TeacherEnrollmentManagement() {
   ]);
 
   const handleApprove = (id: number) => {
+    // Simulate a student limit check - for demo, fail on ID 3
+    const studentLimitReached = id === 3;
+    
+    if (studentLimitReached) {
+      setEnrollments(
+        enrollments.map((e) =>
+          e.id === id 
+            ? { 
+                ...e, 
+                error: "Student limit reached for your plan. Upgrade to approve more students." 
+              } 
+            : e
+        )
+      );
+      return;
+    }
+
     setEnrollments(
       enrollments.map((e) =>
-        e.id === id ? { ...e, status: "approved" as EnrollmentStatus } : e
+        e.id === id ? { ...e, status: "approved" as EnrollmentStatus, error: undefined } : e
       )
     );
     toast.success("Enrollment approved");
@@ -220,33 +238,67 @@ export function TeacherEnrollmentManagement() {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredEnrollments.map((enrollment) => (
-                  <tr
-                    key={enrollment.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <div>
-                        <div className="font-medium text-gray-900">
-                          {enrollment.studentName}
+                  <>
+                    <tr
+                      key={enrollment.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div>
+                          <div className="font-medium text-gray-900">
+                            {enrollment.studentName}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {enrollment.studentEmail}
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {enrollment.studentEmail}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {enrollment.classroom}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {new Date(enrollment.requestDate).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      {getStatusBadge(enrollment.status)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
-                        {enrollment.status === "pending" && (
-                          <>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {enrollment.classroom}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {new Date(enrollment.requestDate).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        {getStatusBadge(enrollment.status)}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          {enrollment.status === "pending" && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleApprove(enrollment.id)}
+                                className="text-green-700 hover:bg-green-50 hover:text-green-800"
+                              >
+                                <Check className="w-4 h-4 mr-1" />
+                                Approve
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleReject(enrollment.id)}
+                                className="text-red-700 hover:bg-red-50 hover:text-red-800"
+                              >
+                                <X className="w-4 h-4 mr-1" />
+                                Reject
+                              </Button>
+                            </>
+                          )}
+                          {enrollment.status === "approved" && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleBlock(enrollment.id)}
+                              className="text-gray-700 hover:bg-gray-100"
+                            >
+                              <Ban className="w-4 h-4 mr-1" />
+                              Block
+                            </Button>
+                          )}
+                          {(enrollment.status === "rejected" ||
+                            enrollment.status === "blocked") && (
                             <Button
                               size="sm"
                               variant="outline"
@@ -256,43 +308,21 @@ export function TeacherEnrollmentManagement() {
                               <Check className="w-4 h-4 mr-1" />
                               Approve
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleReject(enrollment.id)}
-                              className="text-red-700 hover:bg-red-50 hover:text-red-800"
-                            >
-                              <X className="w-4 h-4 mr-1" />
-                              Reject
-                            </Button>
-                          </>
-                        )}
-                        {enrollment.status === "approved" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleBlock(enrollment.id)}
-                            className="text-gray-700 hover:bg-gray-100"
-                          >
-                            <Ban className="w-4 h-4 mr-1" />
-                            Block
-                          </Button>
-                        )}
-                        {(enrollment.status === "rejected" ||
-                          enrollment.status === "blocked") && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleApprove(enrollment.id)}
-                            className="text-green-700 hover:bg-green-50 hover:text-green-800"
-                          >
-                            <Check className="w-4 h-4 mr-1" />
-                            Approve
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                    {enrollment.error && (
+                      <tr key={`${enrollment.id}-error`}>
+                        <td colSpan={5} className="px-6 py-3 bg-red-50">
+                          <div className="flex items-center gap-2 text-sm text-red-700">
+                            <AlertCircle className="w-4 h-4" />
+                            <span>{enrollment.error}</span>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </>
                 ))}
               </tbody>
             </table>

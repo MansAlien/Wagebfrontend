@@ -3,7 +3,7 @@ import { Card } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Progress } from "../../components/ui/progress";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, Link } from "react-router";
 import {
   ArrowLeft,
   Calendar,
@@ -105,7 +105,9 @@ Good luck!`,
               </h1>
               <p className="text-gray-600">{assignment.classroom}</p>
             </div>
-            <Button variant="outline">Edit Assignment</Button>
+            <Link to={`/teacher/classroom/${id}/assignments/${id}/edit`}>
+              <Button variant="outline">Edit Assignment</Button>
+            </Link>
           </div>
         </div>
 

@@ -7,35 +7,27 @@ import { Label } from "../../components/ui/label";
 import { Textarea } from "../../components/ui/textarea";
 import { Switch } from "../../components/ui/switch";
 import { useNavigate, useParams } from "react-router";
-import { ArrowLeft, Upload, Calendar, FileText, AlertTriangle, AlertCircle } from "lucide-react";
+import { ArrowLeft, Upload, Calendar, FileText } from "lucide-react";
 import { toast } from "sonner";
 
-export function TeacherCreateAssignment() {
-  const { id } = useParams();
+export function TeacherEditAssignment() {
+  const { id: classroomId, assignmentId } = useParams();
   const navigate = useNavigate();
-  const [isPublished, setIsPublished] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-
-  // Mock storage data (in MB)
-  const storageUsed = 4750; // 4.75 GB
-  const storageTotal = 5000; // 5 GB
-  const storagePercentage = (storageUsed / storageTotal) * 100;
-  const storageRemaining = storageTotal - storageUsed;
   
-  const isNearLimit = storagePercentage > 90;
-  const isAtLimit = storagePercentage >= 100;
+  // Mock existing assignment data
+  const [isPublished, setIsPublished] = useState(true);
+  const [title, setTitle] = useState("Introduction to React Hooks");
+  const [description, setDescription] = useState(
+    "In this assignment, you will learn about React Hooks and how they can be used to manage state and side effects in functional components.\n\nRequirements:\n1. Create a simple counter app using useState\n2. Implement a data fetching component using useEffect\n3. Create a custom hook for form handling"
+  );
+  const [dueDate, setDueDate] = useState("2026-03-08");
+  const [file, setFile] = useState<File | null>(null);
+  const [existingFileName] = useState("assignment-brief.pdf");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success(
-      isPublished
-        ? "Assignment published successfully!"
-        : "Assignment saved as draft!"
-    );
-    navigate(`/teacher/classroom/${id}`);
+    toast.success("Assignment updated successfully!");
+    navigate(`/teacher/assignment/${assignmentId}`);
   };
 
   return (
@@ -46,17 +38,17 @@ export function TeacherCreateAssignment() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(`/teacher/classroom/${id}`)}
+            onClick={() => navigate(`/teacher/assignment/${assignmentId}`)}
             className="mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Classroom
+            Back to Assignment
           </Button>
           <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-            Create Assignment
+            Edit Assignment
           </h1>
           <p className="text-gray-600">
-            Add a new assignment for your students
+            Update assignment details and settings
           </p>
         </div>
 
@@ -112,14 +104,32 @@ export function TeacherCreateAssignment() {
               {/* File Upload */}
               <div>
                 <Label htmlFor="file">Attachment (Optional)</Label>
+                
+                {/* Show existing file */}
+                {existingFileName && !file && (
+                  <div className="mt-2 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <FileText className="w-5 h-5 text-indigo-600 mr-2" />
+                        <span className="text-sm text-gray-900">
+                          {existingFileName}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="text-sm text-red-600 hover:text-red-700"
+                        onClick={() => {/* Would remove file */}}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="mt-2">
                   <label
                     htmlFor="file"
-                    className={`flex items-center justify-center w-full px-4 py-8 border-2 border-dashed rounded-lg transition-colors ${
-                      isAtLimit
-                        ? "border-gray-200 bg-gray-100 opacity-60 cursor-not-allowed"
-                        : "border-gray-300 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/50"
-                    }`}
+                    className="flex items-center justify-center w-full px-4 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/50 transition-colors"
                   >
                     <div className="text-center">
                       {file ? (
@@ -134,9 +144,9 @@ export function TeacherCreateAssignment() {
                         </>
                       ) : (
                         <>
-                          <Upload className={`w-8 h-8 mx-auto mb-2 ${isAtLimit ? "text-gray-300" : "text-gray-400"}`} />
-                          <p className={`text-sm ${isAtLimit ? "text-gray-400" : "text-gray-600"}`}>
-                            Click to upload or drag and drop
+                          <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-600">
+                            Click to upload {existingFileName ? "a new file" : "or drag and drop"}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">
                             PDF, DOC, or ZIP up to 10MB
@@ -151,29 +161,9 @@ export function TeacherCreateAssignment() {
                     className="hidden"
                     onChange={(e) => setFile(e.target.files?.[0] || null)}
                     accept=".pdf,.doc,.docx,.zip"
-                    disabled={isAtLimit}
                   />
                 </div>
               </div>
-
-              {/* Storage Warning Banners */}
-              {isNearLimit && !isAtLimit && (
-                <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-amber-900">
-                    You're running low on storage. {storageRemaining} MB remaining.
-                  </p>
-                </div>
-              )}
-
-              {isAtLimit && (
-                <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-900">
-                    Storage limit reached. Remove attachments from other assignments to upload new files.
-                  </p>
-                </div>
-              )}
 
               {/* Publish Toggle */}
               <div className="pt-4 border-t border-gray-200">
@@ -201,7 +191,7 @@ export function TeacherCreateAssignment() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate(`/teacher/classroom/${id}`)}
+              onClick={() => navigate(`/teacher/assignment/${assignmentId}`)}
             >
               Cancel
             </Button>
@@ -209,7 +199,7 @@ export function TeacherCreateAssignment() {
               type="submit"
               className="bg-indigo-600 hover:bg-indigo-700"
             >
-              {isPublished ? "Publish Assignment" : "Save as Draft"}
+              Save Changes
             </Button>
           </div>
         </form>

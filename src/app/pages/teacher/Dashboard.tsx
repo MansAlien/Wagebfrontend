@@ -9,6 +9,7 @@ import {
   Clock,
   Users,
   AlertCircle,
+  Crown,
 } from "lucide-react";
 
 export function TeacherDashboard() {
@@ -18,6 +19,13 @@ export function TeacherDashboard() {
     storageUsed: 2.4,
     storageTotal: 5,
     pendingEnrollments: 3,
+  };
+
+  const plan = {
+    name: "Pro",
+    maxClassrooms: 10,
+    maxStudents: 250,
+    maxStorage: 5000, // in MB
   };
 
   const recentAssignments = [
@@ -59,7 +67,7 @@ export function TeacherDashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Classrooms */}
           <Card className="p-6">
             <div className="flex items-start justify-between">
@@ -121,6 +129,35 @@ export function TeacherDashboard() {
             >
               Review requests →
             </Link>
+          </Card>
+
+          {/* Your Plan */}
+          <Card className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">Your Plan</p>
+                <p className="text-3xl font-semibold text-gray-900">
+                  {plan.name}
+                </p>
+              </div>
+              <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                <Crown className="w-6 h-6 text-indigo-600" />
+              </div>
+            </div>
+            <div className="space-y-2 mb-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">{plan.maxClassrooms} classrooms</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">{plan.maxStudents} students</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">{plan.maxStorage} MB storage</span>
+              </div>
+            </div>
+            <button className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+              Upgrade →
+            </button>
           </Card>
         </div>
 

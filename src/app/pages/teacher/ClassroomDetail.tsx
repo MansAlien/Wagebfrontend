@@ -26,8 +26,9 @@ export function TeacherClassroomDetail() {
     id: 1,
     name: "Web Development 101",
     accessCode: "WEB101X",
-    description: "Learn the fundamentals of web development",
     studentCount: 24,
+    is_active: true,
+    color: "indigo",
   };
 
   const assignments = [
@@ -91,17 +92,33 @@ export function TeacherClassroomDetail() {
     );
   };
 
+  const getColorClasses = (color: string) => {
+    const colors: Record<string, string> = {
+      indigo: "bg-indigo-500",
+      purple: "bg-purple-500",
+      blue: "bg-blue-500",
+      teal: "bg-teal-500",
+      amber: "bg-amber-500",
+      rose: "bg-rose-500",
+    };
+    return colors[color] || colors.indigo;
+  };
+
   return (
     <TeacherLayout>
       <div className="p-6 md:p-8 pb-24 md:pb-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-semibold text-gray-900">
                 {classroom.name}
               </h1>
-              <p className="text-gray-600">{classroom.description}</p>
+              {!classroom.is_active && (
+                <Badge className="bg-gray-500 text-white hover:bg-gray-500">
+                  Inactive
+                </Badge>
+              )}
             </div>
             <Button variant="outline" size="sm">
               <MoreVertical className="w-4 h-4" />
@@ -109,30 +126,45 @@ export function TeacherClassroomDetail() {
           </div>
 
           {/* Access Code Card */}
-          <Card className="p-4 bg-indigo-50 border-indigo-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center mr-3">
-                  <Users className="w-5 h-5 text-indigo-600" />
+          {classroom.is_active ? (
+            <Card className="p-4 bg-indigo-50 border-indigo-200 relative overflow-hidden">
+              {/* Color bar at the top */}
+              <div className={`absolute top-0 left-0 right-0 h-1 ${getColorClasses(classroom.color)}`} />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center mr-3">
+                    <Users className="w-5 h-5 text-indigo-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600 mb-0.5">Access Code</p>
+                    <p className="text-xl font-semibold font-mono text-gray-900">
+                      {classroom.accessCode}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600 mb-0.5">Access Code</p>
-                  <p className="text-xl font-semibold font-mono text-gray-900">
-                    {classroom.accessCode}
-                  </p>
-                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyAccessCode}
+                  className="bg-white"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={copyAccessCode}
-                className="bg-white"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                Copy
-              </Button>
-            </div>
-          </Card>
+            </Card>
+          ) : (
+            <Card className="p-4 bg-gray-100 border-gray-300">
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
+                  <Users className="w-5 h-5 text-gray-500" />
+                </div>
+                <p className="text-sm text-gray-600">
+                  This classroom is inactive. Students cannot join using the access code.
+                </p>
+              </div>
+            </Card>
+          )}
         </div>
 
         {/* Tabs */}
