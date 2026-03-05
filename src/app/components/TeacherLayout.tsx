@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router";
 import { LayoutDashboard, BookOpen, UserCheck } from "lucide-react";
+import { UserProfileDropdown } from "./UserProfileDropdown";
 
 interface TeacherLayoutProps {
   children: ReactNode;
@@ -47,15 +48,23 @@ export function TeacherLayout({ children }: TeacherLayoutProps) {
             );
           })}
         </nav>
+
+        {/* User Profile at Bottom */}
+        <div className="px-4 py-4 border-t border-gray-200">
+          <UserProfileDropdown userRole="teacher" position="top" />
+        </div>
       </aside>
 
       {/* Mobile header */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-10">
         <div className="flex items-center justify-between h-full px-4">
-          <h1 className="font-semibold text-xl text-gray-900">Wageb</h1>
-          <span className="px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded">
-            Teacher
-          </span>
+          <div className="flex items-center">
+            <h1 className="font-semibold text-xl text-gray-900">Wageb</h1>
+            <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-100 text-indigo-700 rounded">
+              Teacher
+            </span>
+          </div>
+          <UserProfileDropdown userRole="teacher" />
         </div>
       </div>
 

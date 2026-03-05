@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router";
 import { BookOpen, Plus } from "lucide-react";
+import { UserProfileDropdown } from "./UserProfileDropdown";
 
 interface StudentLayoutProps {
   children: ReactNode;
@@ -27,24 +28,27 @@ export function StudentLayout({ children }: StudentLayoutProps) {
               </span>
             </div>
 
-            <nav className="flex space-x-1">
-              {navItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-indigo-50 text-indigo-700"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    <item.icon className="w-4 h-4 mr-2" />
-                    {item.label}
-                  </Link>
-                );
-              })}
+            <nav className="flex items-center space-x-4">
+              <div className="flex space-x-1">
+                {navItems.map((item) => {
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        isActive
+                          ? "bg-indigo-50 text-indigo-700"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                    >
+                      <item.icon className="w-4 h-4 mr-2" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+              <UserProfileDropdown userRole="student" />
             </nav>
           </div>
         </div>

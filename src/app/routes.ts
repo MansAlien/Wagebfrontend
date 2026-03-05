@@ -9,10 +9,12 @@ import { TeacherEditAssignment } from "./pages/teacher/EditAssignment";
 import { TeacherAssignmentDetail } from "./pages/teacher/AssignmentDetail";
 import { TeacherEnrollmentManagement } from "./pages/teacher/EnrollmentManagement";
 import { TeacherOnboarding } from "./pages/teacher/Onboarding";
+import { TeacherSettings } from "./pages/teacher/Settings";
 import { StudentClassroomList } from "./pages/student/ClassroomList";
 import { StudentJoinClassroom } from "./pages/student/JoinClassroom";
 import { StudentClassroomFeed } from "./pages/student/ClassroomFeed";
 import { StudentAssignmentDetail } from "./pages/student/AssignmentDetail";
+import { StudentSettings } from "./pages/student/Settings";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +58,10 @@ export const router = createBrowserRouter([
     path: "/teacher/enrollments",
     Component: TeacherEnrollmentManagement,
   },
+  {
+    path: "/teacher/settings",
+    Component: TeacherSettings,
+  },
   // Student routes
   {
     path: "/student",
@@ -72,5 +78,9 @@ export const router = createBrowserRouter([
   {
     path: "/student/assignment/:id",
     Component: StudentAssignmentDetail,
+  },
+  {
+    path: "/student/settings",
+    Component: StudentSettings,
   },
 ]);
